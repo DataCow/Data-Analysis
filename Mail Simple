@@ -1,0 +1,44 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue May 22 11:36:13 2018
+
+@author: jankcy
+"""
+
+#!/usr/bin/python3
+ 
+import smtplib
+import poplib
+from email.mime.text import MIMEText
+from email.header import Header
+
+import urllib.request
+from email.mime.multipart import MIMEMultipart
+ 
+# 第三方 SMTP 服务
+pop3_server = 'pop.sina.com'
+mail_host="smtp.sina.com"  #设置服务器
+mail_user="****@sina.com"    #用户名
+mail_pass="***"   #口令 
+server = poplib.POP3(pop3_server)
+ 
+ 
+sender = "****@sina.com"
+receivers = ['****@qq.com']  # 接收邮件，可设置为你的QQ邮箱或者其他邮箱
+ 
+message = MIMEText('最近回信', 'plain', 'utf-8')
+message['From'] = Header(mail_user)
+message['To'] =  Header("最近身体如何", 'utf-8')
+ 
+subject ='how are you!'   
+message['Subject'] = Header(subject, 'utf-8')
+ 
+ 
+try:
+    smtpObj = smtplib.SMTP() 
+    smtpObj.connect(mail_host, 25)    # 25 为 SMTP 端口号
+    smtpObj.login(mail_user,mail_pass)
+    smtpObj.sendmail(sender, receivers, message.as_string())
+    print ("邮件发送成功")
+except smtplib.SMTPException:
+    print ("Error: 无法发送邮件")
