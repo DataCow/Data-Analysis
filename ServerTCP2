@@ -1,0 +1,52 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed May 23 09:23:34 2018
+作者：徐心愿
+链接：https://www.zhihu.com/question/49830386/answer/244410951
+来源：知乎
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+@author: jankcy
+"""
+
+# 服务器代码
+import socket
+import threading
+
+
+class tcp_server(object):
+    def __init__(self):
+        self.tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.tcp_socket.bind(('', 8001))
+        self.tcp_socket.listen(250)
+        self.proceses = []
+
+    def run_forver(self):
+        while True:
+            new_socket, new_addr = self.tcp_socket.accept()
+            threads = threading.Thread(target=self.service_clinet, args=(new_socket, new_addr))
+            threads.start()
+
+            # 此处不应该关闭， 因为Python3规则是 线程任务运行完，自动回收该线程
+            # new_socket.close()
+            # threads.join()
+
+    def service_clinet(self, new_socket, new_addr):
+        while True:
+            data = new_socket.recv(1024)
+            if not data:
+                # 服务器收不到客户端的消息，跳出循环，关闭new_socket, 结束此进程
+                print(new_addr, '已断开链接')
+                new_socket.close()
+                break
+            print('%s 发来消息 %s' % (new_addr, data.decode()))
+
+            new_socket.send(data)
+
+
+def main():
+    s = tcp_server()
+    s.run_forver()
+
+
+if __name__ == '__main__':
+    main()
