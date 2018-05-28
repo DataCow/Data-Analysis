@@ -1,0 +1,44 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue May 22 12:56:05 2018
+
+@author: jankcy
+"""
+
+from email.mime.text import MIMEText
+msg = MIMEText('hello, world', 'plain', 'utf-8')
+1
+2
+# 输入Email地址和口令:
+from_addr = '****@sina.com'
+#这里的密码一定是授权码，163邮箱原始密码不行。
+password = 'bru*****'
+# 输入SMTP服务器地址:这里我们用smtp.163.com
+smtp_server = str('smtp.sina.com')
+# 输入收件人地址:
+to_addr = str('323****9@qq.com')
+
+#用来格式化邮件地址
+from email.header import Header
+from email.utils import parseaddr, formataddr
+
+def _format_addr(s):
+    name, addr = parseaddr(s)#这个函数会解析出姓名和邮箱地址
+    return formataddr(( \
+        Header(name, 'utf-8').encode(), \
+         if isinstance(addr,str): 
+             addr.encode('utf-8') 
+         else addr))
+#设置发件人，收件人姓名和邮件主题
+msg['From'] = _format_addr(u'张康 <%s>' % from_addr)
+msg['To'] = _format_addr(u'朋友 <%s>' % to_addr)
+msg['Subject'] = Header(u'测试邮件……', 'utf-8').encode()
+
+import smtplib
+server = smtplib.SMTP(smtp_server, 25) # SMTP协议默认端口是25
+server.set_debuglevel(1)#打印出和SMTP服务器交互的所有信息
+server.login(from_addr, password)#登录服务器
+#发送邮件，这里第二个参数是个列表，可以有多个收件人
+#邮件正文是一个str，as_string()把MIMEText对象变成str
+server.sendmail(from_addr, [to_addr], msg.as_string())
+server.quit()
