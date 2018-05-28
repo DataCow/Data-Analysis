@@ -1,0 +1,11 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed May 23 10:50:05 2018
+
+@author: jankcy
+"""
+
+import time
+
+localtime = time.localtime(time.time())
+print ("本地时间为 :", localtime)
